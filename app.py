@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, redirect, url_for, flash, request
-from forms import GetTrainsForm
+from forms import GetTrainsForm, ReservationForm
 import os
 
 app = Flask(__name__)
@@ -20,7 +20,7 @@ def index():
         date_year = None
         date_month = None
         date_day = None
-        
+
     station_start = request.args.get('station_start', default=None, type=int)
     station_end = request.args.get('station_end', default=None, type=int)
     num_adult = request.args.get('num_adult', default=0, type=int)
@@ -30,17 +30,37 @@ def index():
     num_pets = request.args.get('num_pets', default=0, type=int)
 
     print(date_year, date_month, date_day, station_start, station_end, num_adult, num_child, num_senior, num_military, num_pets)
+
+    # if there are no trains available after filtering the database
+    # do this:
+    # return render_template('notrainsavailable.html')
+
     return render_template('index.html', form=form)
 
 # in case a user somehow finds themselves at this route, redirect to index
-@app.route('/reservation', methods=['GET'])
+@app.route('/reservations/', methods=['GET'])
 def reservation():
     form = GetTrainsForm()
     return redirect(url_for('index', form=form))
 
-@app.route('/reservations/create')
-def make_reservation():
-    return render_template('makereservation.html')
+@app.route('/reservations/create', methods=['GET', 'POST'])
+def make_reservation(train_id=None):
+    form = ReservationForm()
+
+    if request.method == 'GET':
+        return render_template('makereservation.html', form=form)
+    elif request.method == 'POST':
+        if form.validate():
+            # add this reservation to the database and update accordingly
+            # sqlalchemy stuff goes here
+
+            return redirect(url_for('successful_reservation'))
+        else:
+            return render_template('makereservation.html', form=form)
+
+@app.route('/reservations/success')
+def successful_reservation():
+    return render_template('success.html')
 
 @app.route('/reservations/rebook')
 def rebook_reservation():
