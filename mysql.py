@@ -53,3 +53,24 @@ def find_or_create_passenger(email, first_name, last_name):
         session.add(passenger)
         session.commit()
     return(passenger_id)
+
+def find_station(station_name):
+    for instance in session.query(Stations):
+        if instance.station_name == station_name:
+            return instance.station_id
+
+def find_segment_fare(segment_id):
+    return session.query(Segments).filter(Segments.segment_id == segment_id).first().seg_fare
+
+def find_fare_adjustment(fare_type):
+    return session.query(Fare_Types).filter(Fare_Types.fare_type == fare_type).first().fare_rate
+
+def find_trains(station_start, station_end, passengers, day):
+    station_start_id = find_station(station_start)
+    station_end_id = find_station(station_end)
+    num_passengers = sum(passengers)
+    trip_direction = 0 if station_start_id < station_end_id else 1
+
+    for instance in session.query(Trains).filter(Train.train_direction = trip_direction):
+        pass
+        # TODO: Finish this function (stopped to push progress)
