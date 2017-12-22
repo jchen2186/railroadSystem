@@ -103,9 +103,16 @@ def find_trains(station_start, station_end, passengers, day):
                                                     and Seats_Free.segment_id == seg).first().freeseat
             if seats < num_passengers:
                 trains_free[instance.train_id] = False
-    print("Trains: ", trains_free)
-    print("Fare: ", fare)
+    # print("Trains: ", trains_free)
+    # print("Fare: ", fare)
+    trains_free["fare"] = fare
     return trains_free
 
-find_trains('Boston, MA - South Station', 'Washington, DC - Union Station', [5,0,0,0,0], '2018-06-01')
-find_trains('Wilmington, DE - J.R. Biden, Jr. Station', 'Boston, MA - South Station',  [0,100,100,100,100], '2017-12-30')
+first = find_trains('Boston, MA - South Station', 'Washington, DC - Union Station', [5,0,0,0,0], '2018-06-01')
+second = find_trains('Wilmington, DE - J.R. Biden, Jr. Station', 'Boston, MA - South Station',  [0,100,100,100,100], '2017-12-30')
+
+for key, value in first.items():
+    if(key != 'fare'):
+        print("Train ",key,": ",value)
+    else:
+        print("Full Fare: ", value)
