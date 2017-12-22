@@ -15,79 +15,75 @@
 
   <div class="columns">
     <div class="column is-two-thirds is-offset-2">
+      
       <!-- short form for filtering results -->
       <form action="{{ url_for('index') }}" method="GET">
-
+        <!-- trip date, station start, and station end -->
         <div class="columns">
           <div class="column">
             <div class="field">
-              <label class="label">Trip Date</label>
-              <input class="input" type="date" name="tripdate">
+              <label class="label">{{ form.date.label }}</label>
+              <div class="control">{{ form.date(class_="input", type="date") }}</div>
             </div>
           </div>
 
           <div class="column">
-            <!-- will replace later -->
             <div class="field">
-              <label class="label">Start Station</label>
-              <div class="select">
-                <select>
-                  <option value="station1">Station 1</option>
-                  <option value="station2">Station 2</option>
-                  <option value="station3">Station 3</option>
-                </select>
+              <label class="label">{{ form.station_start.label }}</label>
+              <div class="control">
+                <div class="select">
+                  {{ form.station_start }}
+                </div>
               </div>
             </div>
           </div>
 
           <div class="column">
-            <!-- will replace later -->
             <div class="field">
-              <label class="label">End Station</label>
-              <div class="select">
-                <select>
-                  <option value="station1">Station 1</option>
-                  <option value="station2">Station 2</option>
-                  <option value="station3">Station 3</option>
-                </select>
+              <label class="label">{{ form.station_end.label }}</label>
+              <div class="control">
+                <div class="select">
+                  {{ form.station_end }}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- types of passengers -->
         <div class="field">
-          <label class="label">Types of Passenger</label>
+          <label class="label">Types of Passengers</label>
 
           <div class="columns">
             <div class="column">
-              <label class="label">Adult</label>
-              <input class="input" type="number" min="0">
+              <label class="label">{{ form.num_adult.label }}</label>
+              <div class="control">{{ form.num_adult(class_="input", type="number", min="0") }}</div>
             </div>
 
             <div class="column">
-              <label class="label">Child</label>
-              <input class="input" type="number" min="0">
+              <label class="label">{{ form.num_child.label }}</label>
+              <div class="control">{{ form.num_child(class_="input", type="number", min="0") }}</div>
             </div>
 
             <div class="column">
-              <label class="label">Senior</label>
-              <input class="input" type="number" min="0">
+              <label class="label">{{ form.num_senior.label }}</label>
+              <div class="control">{{ form.num_senior(class_="input", type="number", min="0") }}</div>
             </div>
 
             <div class="column">
-              <label class="label">Military</label>
-              <input class="input" type="number" min="0">
+              <label class="label">{{ form.num_military.label }}</label>
+              <div class="control">{{ form.num_military(class_="input", type="number", min="0") }}</div>
             </div>
 
             <div class="column">
-              <label class="label">Pet</label>
-              <input class="input" type="number" min="0">
+              <label class="label">{{ form.num_pets.label }}</label>
+              <div class="control">{{ form.num_pets(class_="input", type="number", min="0") }}</div>
             </div>
           </div>
         </div>
 
         <div class="control">
-          <button type="submit" class="button is-link">Submit</button>
+          {{ form.submit(class="button is-link") }}
         </div>
 
       </form>
