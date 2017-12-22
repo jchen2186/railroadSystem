@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero is-danger">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">Sorry! Something went wrong!</h1>
+      <h2 class="subtitle">There are no trains available that fit your needs.</h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <a class="button" href="{{ request.referrer }}">Go back</a>
+</section>
+
+{% endblock %}
