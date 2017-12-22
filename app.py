@@ -6,7 +6,19 @@ app.secret_key = 'csc336railroad'
 
 @app.route('/', methods=['GET'])
 def index():
-	return render_template('example.html')
+	return render_template('index.html')
+
+@app.route('/reservations', methods=['GET'])
+def reservations():
+    return render_template('viewavailableseats.html')
+
+@app.route('/reservations/create')
+def make_reservation():
+    return render_template('makereservation.html')
+
+@app.route('/reservations/cancel')
+def cancel_reservation():
+    return render_template('cancelreservation.html')
 
 # Run Flask web server
 if __name__ == '__main__':

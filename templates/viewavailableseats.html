@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{{ url_for('make_reservation') }}" class="button is-primary">Make a Reservation</a>
+<a href="{{ url_for('cancel_reservation') }}" class="button is-primary">Cancel a Reservation</a>
+
+{% endblock %}
