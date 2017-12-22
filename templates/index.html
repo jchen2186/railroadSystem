@@ -2,11 +2,151 @@
 
 {% block content %}
 
-<div class="content has-text-centered">
-  <h1>Railroad System</h1>
-  <!-- <h2 class="subtitle">Group 6</h2> -->
+<section class="hero is-primary">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">Railroad System</h1>
+      <h2 class="subtitle">Reserve your seat today!</h2>
+    </div>
+  </div>
+</section>
 
-</div>
+<section class="section">
+
+  <div class="columns">
+    <div class="column is-two-thirds is-offset-2">
+      
+      <!-- short form for filtering results -->
+      <form action="{{ url_for('index') }}" method="GET">
+        <!-- trip date, station start, and station end -->
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <label class="label">{{ form.date.label }}</label>
+              <div class="control">{{ form.date(class_="input", type="date") }}</div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="field">
+              <label class="label">{{ form.station_start.label }}</label>
+              <div class="control">
+                <div class="select">
+                  {{ form.station_start }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="field">
+              <label class="label">{{ form.station_end.label }}</label>
+              <div class="control">
+                <div class="select">
+                  {{ form.station_end }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- types of passengers -->
+        <div class="field">
+          <label class="label">Types of Passengers</label>
+
+          <div class="columns">
+            <div class="column">
+              <label class="label">{{ form.num_adult.label }}</label>
+              <div class="control">{{ form.num_adult(class_="input", type="number", min="0") }}</div>
+            </div>
+
+            <div class="column">
+              <label class="label">{{ form.num_child.label }}</label>
+              <div class="control">{{ form.num_child(class_="input", type="number", min="0") }}</div>
+            </div>
+
+            <div class="column">
+              <label class="label">{{ form.num_senior.label }}</label>
+              <div class="control">{{ form.num_senior(class_="input", type="number", min="0") }}</div>
+            </div>
+
+            <div class="column">
+              <label class="label">{{ form.num_military.label }}</label>
+              <div class="control">{{ form.num_military(class_="input", type="number", min="0") }}</div>
+            </div>
+
+            <div class="column">
+              <label class="label">{{ form.num_pets.label }}</label>
+              <div class="control">{{ form.num_pets(class_="input", type="number", min="0") }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control">
+          {{ form.submit(class="button is-link") }}
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  
+
+  <table class="table is-hoverable" align="center" width="75%">
+    <thead>
+      <tr>
+        <th>Train ID</th>
+        <th>Start Station</th>
+        <th>End Station</th>
+        <th>Arrival time at the start station</th>
+        <th>Number of Seats Free</th>
+        <th>Base Price</th>
+      </tr>
+    </thead>
+
+    <tfoot>
+      <tr>
+        <th>Train ID</th>
+        <th>Start Station</th>
+        <th>End Station</th>
+        <th>Arrival time at the start station</th>
+        <th>Number of Seats Free</th>
+        <th>Base Price</th>
+      </tr>
+    </tfoot>
+
+    <tbody>
+      <!-- insert jinja for loop to go through the train tables here -->
+
+      <!-- temporary placeholder -->
+      <tr>
+        <td>1</td>
+        <td>Start Station 1</td>
+        <td>End Station 1</td>
+        <td>December 31, 2017 12:00AM</td>
+        <td>10</td>
+        <td>$50.00</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Start Station 2</td>
+        <td>End Station 2</td>
+        <td>December 31, 2017 12:00AM</td>
+        <td>10</td>
+        <td>$50.00</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Start Station 3</td>
+        <td>End Station 3</td>
+        <td>December 31, 2017 12:00AM</td>
+        <td>10</td>
+        <td>$50.00</td>
+      </tr>
+    </tbody>
+  </table>  
+</section>
+
 
 
 {% endblock %}
