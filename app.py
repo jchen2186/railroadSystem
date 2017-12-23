@@ -31,7 +31,7 @@ def search():
     trains = find_trains(station_start, station_end, passengers, date)
     print(trains)
 
-    train_results = [(train_id, find_station_name(station_start), get_station_train_departure(train_id, station_start), find_station_name(station_end), get_station_train_arrival(train_id, station_end), trains[0][train_id], trains[1]) for train_id in trains[0]]
+    train_results = [(train_id, find_station_name(station_start), get_station_train_departure(train_id, station_start), find_station_name(station_end), get_station_train_arrival(train_id, station_end), trains[0][train_id], trains[1], passengers) for train_id in trains[0]]
     print(train_results)
     # if there are no trains available after filtering the database
     # do this:
