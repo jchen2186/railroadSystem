@@ -43,6 +43,11 @@ class GetTrainsForm(FlaskForm):
     submit = SubmitField('Search for a train')
 
 class ReservationForm(FlaskForm):
+    num_adult = StringField(label='Adult', id='num_adult')
+    num_child = StringField(label='Child', id='num_child')
+    num_senior = StringField(label='Senior', id='num_senior')
+    num_military = StringField(label='Military', id='num_military')
+    num_pets = StringField(label='Pets', id='num_pets')
     email = StringField(label='Email Address', id='email',
                         validators=[DataRequired('Please enter an email address.'),
                                     Email(message='Please enter a valid email address.')])

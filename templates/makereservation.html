@@ -38,16 +38,16 @@
         </tr>
       </table>
 
-      <div class="columns">
-        <div class="column"><strong>Adult</strong>: {{ passengers[0] }}</div>
-        <div class="column"><strong>Child</strong>: {{ passengers[1] }}</div>
-        <div class="column"><strong>Senior</strong>: {{ passengers[2] }}</div>
-        <div class="column"><strong>Military</strong>: {{ passengers[3] }}</div>
-        <div class="column"><strong>Pets</strong>: {{ passengers[4] }}</div>
-      </div>
-
       <form action="{{ url_for('make_reservation', date=date, train_id=train_id, departure_station=departure_station, departure_time=departure_time, arrival_station=arrival_station, arrival_time=arrival_time, seats_available=seats_available, price=price, num_adult=num_adult, num_child=num_child, num_senior=num_senior, num_military=num_military, num_pets=num_pets) }}" method="POST">
         {{ form.hidden_tag() }}
+
+        <div class="columns">
+          <div class="column"><strong>Adult</strong>: {{ form.num_adult(class="input", value=passengers[0]) }}</div>
+          <div class="column"><strong>Child</strong>: {{ form.num_child(class="input", value=passengers[1]) }}</div>
+          <div class="column"><strong>Senior</strong>: {{ form.num_senior(class="input", value=passengers[2]) }}</div>
+          <div class="column"><strong>Military</strong>: {{ form.num_military(class="input", value=passengers[3]) }}</div>
+          <div class="column"><strong>Pets</strong>: {{ form.num_pets(class="input", value=passengers[4]) }}</div>
+        </div>
 
         <div class="columns">
           <div class="column">
