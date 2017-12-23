@@ -1,6 +1,6 @@
 from flask import Flask, render_template, session, redirect, url_for, flash, request
 from forms import GetTrainsForm, ReservationForm, GetReservationsForm, CancelReservationForm
-from mysql import *
+from db_setup import *
 import os
 
 app = Flask(__name__)
@@ -66,9 +66,38 @@ def make_reservation(train_id=None):
 def success(message):
     return render_template('success.html', message=message)
 
-@app.route('/reservations/rebook')
+@app.route('/reservations/rebook', methods=['GET', 'POST'])
 def rebook_reservation():
-    return render_template('rebookreservation.html')
+    form = GetReservationsForm()
+    form2 = CancelReservationForm()
+
+    if request.method == 'GET':
+        return render_template('getreservations.html', form=form, reason='rebook')
+    elif request.method == 'POST':
+        reservation_id = request.args.get('reservation_id', default=None, type=int)
+
+        if reservation_id is not None:
+            # query the database for the reservation given by
+            # this reservation id
+            # cancel the reservation
+
+            message = 'The reservation has been cancelled. You can proceed to\
+            rebooking your reservation here.'
+            return render_template('success.html', message=message)
+
+        elif form.validate():
+            # query the database for any reservations for this person
+
+            # replace reservations with something useful
+            # i just used this for testing
+            reservations = [1, 2, 4]
+
+            return render_template('rebookreservation.html',
+                                   form2=form2,
+                                   email=form.email.data,
+                                   reservations=reservations)
+        else:
+            return render_template('getreservations.html', form=form, reason='rebook')
 
 @app.route('/reservations/cancel', methods=['GET', 'POST'])
 def cancel_reservation(email=None, reservations=None, reservation_id=None):
@@ -76,7 +105,7 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
     form2 = CancelReservationForm()
 
     if request.method == 'GET':
-        return render_template('getreservations.html', form=form)
+        return render_template('getreservations.html', form=form, reason='cancel')
     elif request.method == 'POST':
         reservation_id = request.args.get('reservation_id', default=None, type=int)
 
@@ -100,7 +129,7 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
                                    email=form.email.data,
                                    reservations=reservations)
         else:
-            return render_template('getreservations.html', form=form)
+            return render_template('getreservations.html', form=form, reason='cancel')
 
 # Run Flask web server
 if __name__ == '__main__':
