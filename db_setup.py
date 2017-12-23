@@ -177,7 +177,7 @@ def create_reservation_and_trips(train_id, departure_station, departure_time, ar
             session.commit()
 
 ######## helper function
-def get_station_train_deprture(train_id, station_id):
+def get_station_train_departure(train_id, station_id):
     return session.query(Stops_At).filter(Stops_At.train_id == train_id, Stops_At.station_id == station_id).first().time_out
 
 def get_station_train_arrival(train_id, station_id):
