@@ -117,7 +117,7 @@ def find_trains(station_start, station_end, passengers, day):
     return [trains_free, fare, day]
 
 ######## helper function
-def get_station_train_deprture(train_id, station_id):
+def get_station_train_departure(train_id, station_id):
     return session.query(Stops_At).filter(Stops_At.train_id == train_id and Stops_At.station_id == station_id).first().time_out
 
 def get_station_train_arrival(train_id, station_id):

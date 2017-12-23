@@ -16,17 +16,6 @@ def search():
     form = GetTrainsForm()
 
     date = request.args.get('date', default=None, type=str)
-
-    if date:
-        date = date.split('-')
-        date_year = int(date[0])
-        date_month = int(date[1])
-        date_day = int(date[2])
-    else:
-        date_year = None
-        date_month = None
-        date_day = None
-
     station_start = request.args.get('station_start', default=None, type=int)
     station_end = request.args.get('station_end', default=None, type=int)
     num_adult = request.args.get('num_adult', default=0, type=int)
@@ -42,7 +31,7 @@ def search():
     trains = find_trains(station_start, station_end, passengers, date)
     print(trains)
 
-    train_results = [(train_id, find_station_name(station_start), find_station_name(station_end), '', '', trains[1]) for train_id in trains[0]]
+    train_results = [(train_id, find_station_name(station_start), get_station_train_departure(train_id, station_start), find_station_name(station_end), get_station_train_arrival(train_id, station_end), trains[0][train_id], trains[1]) for train_id in trains[0]]
     print(train_results)
     # if there are no trains available after filtering the database
     # do this:
