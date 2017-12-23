@@ -8,7 +8,7 @@ pymysql.install_as_MySQLdb()
 
 engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
 
-#engine = create_engine("mysql://root@localhost/F17336Pteam6")
+# engine = create_engine("mysql://root@localhost/F17336Pteam6")
 
 Base = declarative_base()
 metadata = MetaData(bind=engine)
@@ -133,8 +133,18 @@ def get_fare_type():
     return retval
 
 def create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker, day):
-    station_start_id = int(find_station(departure_station))
-    station_end_id = int(find_station(arrival_station))
+    try:
+        station_start_id = int(find_station(departure_station))
+    except:
+        session.rollback()
+        station_start_id = int(find_station(departure_station))
+
+    try:
+        station_end_id = int(find_station(arrival_station))
+    except:
+        session.rollback()
+        station_end_id = int(find_station(arrival_station))
+
     segments = segment_list(station_start_id, station_end_id)
     base_fare = 0
     for seg in segments:
