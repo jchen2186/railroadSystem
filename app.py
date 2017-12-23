@@ -31,14 +31,14 @@ def search():
     trains = find_trains(station_start, station_end, passengers, date)
     print(trains)
 
-    train_results = [(train_id, find_station_name(station_start), get_station_train_departure(train_id, station_start), find_station_name(station_end), get_station_train_arrival(train_id, station_end), trains[0][train_id], trains[1], passengers) for train_id in trains[0]]
+    train_results = [(train_id, find_station_name(station_start), get_station_train_departure(train_id, station_start), find_station_name(station_end), get_station_train_arrival(train_id, station_end), trains[0][train_id], trains[1]) for train_id in trains[0]]
     print(train_results)
     # if there are no trains available after filtering the database
     # do this:
     if not len(train_results):
         return render_template('notrainsavailable.html')
 
-    return render_template('index.html', form=form, results=train_results)
+    return render_template('index.html', form=form, results=train_results, passengers=passengers)
 
 # in case a user somehow finds themselves at this route, redirect to index
 @app.route('/reservations/', methods=['GET'])
@@ -58,11 +58,16 @@ def make_reservation(train_id=None):
         arrival_time = request.args.get('arrival_time', type=str)
         seats_available = request.args.get('seats_available', type=str)
         price = request.args.get('price', type=str)
+        num_adult = request.args.get('num_adult', type=int)
+        num_child = request.args.get('num_child', type=int)
+        num_senior = request.args.get('num_senior', type=int)
+        num_military = request.args.get('num_military', type=int)
+        num_pets = request.args.get('num_pets', type=int)
 
         return render_template('makereservation.html', form=form, train_id=train_id,
             departure_station=departure_station, departure_time=departure_time,
             arrival_station=arrival_station, arrival_time=arrival_time,
-            seats_available=seats_available, price=price)
+            seats_available=seats_available, price=price, passengers=[num_adult, num_child, num_senior, num_military, num_pets])
     elif request.method == 'POST':
         if form.validate():
             # add this reservation to the database and update accordingly

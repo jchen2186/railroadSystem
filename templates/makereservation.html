@@ -39,11 +39,11 @@
       </table>
 
       <div class="columns">
-        <div class="column"><strong>Adult</strong>:</div>
-        <div class="column"><strong>Child</strong>:</div>
-        <div class="column"><strong>Senior</strong>:</div>
-        <div class="column"><strong>Military</strong>:</div>
-        <div class="column"><strong>Pets</strong>:</div>
+        <div class="column"><strong>Adult</strong>: {{ passengers[0] }}</div>
+        <div class="column"><strong>Child</strong>: {{ passengers[1] }}</div>
+        <div class="column"><strong>Senior</strong>: {{ passengers[2] }}</div>
+        <div class="column"><strong>Military</strong>: {{ passengers[3] }}</div>
+        <div class="column"><strong>Pets</strong>: {{ passengers[4] }}</div>
       </div>
 
       <form action="{{ url_for('make_reservation', train_id=1) }}" method="POST">
