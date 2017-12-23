@@ -1,6 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import datetime
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -97,24 +98,25 @@ def find_trains(station_start, station_end, passengers, day):
     trip_direction = 0 if station_start_id < station_end_id else 1
     trains_free = {}
     # print(station_start,", ", station_end, ": ", segments)
-    for instance in session.query(Trains).filter(Trains.train_direction == trip_direction):
-        trains_free[instance.train_id] = True
+    weekdays = datetime.datetime.strptime(day, '%Y-%m-%d').date().weekday()
+    if weekdays < 5:
+        weekdays = 1
+    else:
+        weekdays = 0
+    for instance in session.query(Trains).filter(Trains.train_direction == trip_direction).filter(Trains.train_days == weekdays):
+        trains_free[instance.train_id] = 500
         for seg in segments:
-            seats = session.query(Seats_Free).filter(Seats_Free.train_id == instance.train_id
-                                                    and Seats_Free.seat_free_date == day
-                                                    and Seats_Free.segment_id == seg).first().freeseat
+            seats = session.query(Seats_Free).filter(Seats_Free.train_id == instance.train_id).filter(Seats_Free.seat_free_date == day).filter(Seats_Free.segment_id == seg).first().freeseat
             if seats < num_passengers:
-                trains_free[instance.train_id] = False
-    # print("Trains: ", trains_free)
-    # print("Fare: ", fare)
-    return [trains_free, fare]
+                trains_free[instance.train_id] = 0
+            else:
+                if(seats < trains_free[instance.train_id]):
+                    trains_free[instance.train_id] = seats
+    return [trains_free, fare, day]
 
 if __name__ == "__main__":
-    first = find_trains('Boston, MA - South Station', 'Washington, DC - Union Station', [5,0,0,0,0], '2018-06-01')
-    second = find_trains('Wilmington, DE - J.R. Biden, Jr. Station', 'Boston, MA - South Station',  [0,100,100,100,100], '2017-12-30')
+    first = find_trains(1,25,[5,0,0,0,0], "2018-06-01")
+    second = find_trains(20,1, [0,100,100,100,100], '2017-12-30')
 
-    for key, value in first.items():
-        if(key != 'fare'):
-            print("Train ",key,": ",value)
-        else:
-            print("Full Fare: ", value)
+    print(first)
+    print(second)
