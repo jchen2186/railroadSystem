@@ -49,46 +49,36 @@ def reservation():
 @app.route('/reservations/create', methods=['GET', 'POST'])
 def make_reservation(train_id=None):
     form = ReservationForm()
+    train_id = request.args.get('train_id', type=int)
+    departure_station = request.args.get('departure_station', type=str)
+    departure_time = request.args.get('departure_time', type=str)
+    arrival_station = request.args.get('arrival_station', type=str)
+    arrival_time = request.args.get('arrival_time', type=str)
+    seats_available = request.args.get('seats_available', type=str)
+    price = request.args.get('price', type=str)
+    num_adult = request.args.get('num_adult', type=int)
+    num_child = request.args.get('num_child', type=int)
+    num_senior = request.args.get('num_senior', type=int)
+    num_military = request.args.get('num_military', type=int)
+    num_pets = request.args.get('num_pets', type=int)
 
     if request.method == 'GET':
-        train_id = request.args.get('train_id', type=int)
-        departure_station = request.args.get('departure_station', type=str)
-        departure_time = request.args.get('departure_time', type=str)
-        arrival_station = request.args.get('arrival_station', type=str)
-        arrival_time = request.args.get('arrival_time', type=str)
-        seats_available = request.args.get('seats_available', type=str)
-        price = request.args.get('price', type=str)
-        num_adult = request.args.get('num_adult', type=int)
-        num_child = request.args.get('num_child', type=int)
-        num_senior = request.args.get('num_senior', type=int)
-        num_military = request.args.get('num_military', type=int)
-        num_pets = request.args.get('num_pets', type=int)
-
         return render_template('makereservation.html', form=form, train_id=train_id,
             departure_station=departure_station, departure_time=departure_time,
             arrival_station=arrival_station, arrival_time=arrival_time,
             seats_available=seats_available, price=price, passengers=[num_adult, num_child, num_senior, num_military, num_pets])
     elif request.method == 'POST':
         if form.validate():
-            train_id = request.args.get('train_id', type=int)
-            departure_station = request.args.get('departure_station', type=str)
-            departure_time = request.args.get('departure_time', type=str)
-            arrival_station = request.args.get('arrival_station', type=str)
-            arrival_time = request.args.get('arrival_time', type=str)
-            seats_available = request.args.get('seats_available', type=str)
-            price = request.args.get('price', type=str)
-            num_adult = request.args.get('num_adult', type=int)
-            num_child = request.args.get('num_child', type=int)
-            num_senior = request.args.get('num_senior', type=int)
-            num_military = request.args.get('num_military', type=int)
-            num_pets = request.args.get('num_pets', type=int)
             # add this reservation to the database and update accordingly
             # sqlalchemy stuff goes here
 
             message = 'The reservation has been made successfully!'
             return render_template('success.html', message=message)
         else:
-            return render_template('makereservation.html', form=form)
+            return render_template('makereservation.html', form=form, train_id=train_id,
+            departure_station=departure_station, departure_time=departure_time,
+            arrival_station=arrival_station, arrival_time=arrival_time,
+            seats_available=seats_available, price=price, passengers=[num_adult, num_child, num_senior, num_military, num_pets])
 
 @app.route('/reservations/success')
 def success(message):
