@@ -82,7 +82,8 @@ def segment_list(station_n, station_s):
 def find_full_fare(list_of_segs, list_of_pass):
     rate = 0
     fare = 0
-    for i, inst in enumerate(session.query(Fare_Types).filter(True)):
+    fares = session.query(Fare_Types)
+    for i, inst in enumerate(fares):
         rate += list_of_pass[i] * inst.fare_rate
     for seg in list_of_segs:
         trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
