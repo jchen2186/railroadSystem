@@ -31,22 +31,23 @@
             </tr>
           </thead>
 
-          {% for reservation in reservations %}
+          {% for res in reservations %}
             <tr>
               <td>
                 <!-- a form just for the button -->
                 <!-- replace the reservation_id with something useful -->
                 <!-- really ugly way of doing this, but i can't think of anything else that can work at the moment -->
-                <form action="{{ url_for('cancel_reservation', reservation_id=1) }}" method="POST">
+
+                <form action="{{ url_for('cancel_reservation', reservation_id=res[0]) }}" method="POST">
                   {{ form2.submit(class="button is-danger") }}
                 </form>
               </td>
-              <td>reservation id here</td>
-              <td>train id here</td>
-              <td>start station here</td>
-              <td>end station here</td>
-              <td>arrival time here</td>
-              <td>price here</td>
+              <td>{{ res[0] }}</td>
+              <td>{{ res[1] }}</td>
+              <td>{{ res[2] }}</td>
+              <td>{{ res[3] }}</td>
+              <td>{{ res[4] }}</td>
+              <td>{{ res[5] }}</td>
             </tr>
           {% endfor %}
         </table>

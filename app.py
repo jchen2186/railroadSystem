@@ -88,9 +88,7 @@ def rebook_reservation():
         elif form.validate():
             # query the database for any reservations for this person
 
-            # replace reservations with something useful
-            # i just used this for testing
-            reservations = [1, 2, 4]
+            reservations = get_my_trips(email)
 
             return render_template('rebookreservation.html',
                                    form2=form2,
@@ -120,9 +118,7 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
         elif form.validate():
             # query the database for any reservations for this person
 
-            # replace reservations with something useful
-            # i just used this for testing
-            reservations = [1, 2, 4]
+            reservations = get_my_trips(email)
 
             return render_template('cancelreservation.html',
                                    form2=form2,
