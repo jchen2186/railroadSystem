@@ -33,7 +33,7 @@ class Stops_At(Base):
     __table__ = Table('stops_at', metadata, autoload=True)
 
 class Trains(Base):
-    __table__ = Table('stations', metadata, autoload=True)
+    __table__ = Table('trains', metadata, autoload=True)
 
 class Trips(Base):
     __table__ = Table('stations', metadata, autoload=True)
@@ -55,9 +55,7 @@ def find_or_create_passenger(email, first_name, last_name):
     return(passenger_id)
 
 def find_station(station_name):
-    for instance in session.query(Stations):
-        if instance.station_name == station_name:
-            return instance.station_id
+   return session.query(Stations).filter(Stations.station_name == station_name).first().station_id
 
 def find_segment_fare(segment_id):
     return session.query(Segments).filter(Segments.segment_id == segment_id).first().seg_fare
@@ -65,12 +63,56 @@ def find_segment_fare(segment_id):
 def find_fare_adjustment(fare_type):
     return session.query(Fare_Types).filter(Fare_Types.fare_type == fare_type).first().fare_rate
 
+def segment_list(station_n, station_s):
+    # Create a list of segments
+    segments = []
+    if station_n < station_s:
+        for i in range(station_n, station_s):
+            segments += [i]
+    else:
+        for i in range(station_s, station_n):
+            segments += [i]
+    return segments
+
+def find_full_fare(list_of_segs, list_of_pass):
+    rate = 0
+    fare = 0
+    for i, inst in enumerate(session.query(Fare_Types).filter(True)):
+        rate += list_of_pass[i] * inst.fare_rate
+    for seg in list_of_segs:
+        trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
+        fare += trip_seg.first().seg_fare
+    fare *= rate
+    return fare
+
+
 def find_trains(station_start, station_end, passengers, day):
     station_start_id = find_station(station_start)
     station_end_id = find_station(station_end)
     num_passengers = sum(passengers)
+    segments = segment_list(station_start_id, station_end_id)
+    fare = find_full_fare(segments, passengers)
     trip_direction = 0 if station_start_id < station_end_id else 1
+    trains_free = {}
+    # print(station_start,", ", station_end, ": ", segments)
+    for instance in session.query(Trains).filter(Trains.train_direction == trip_direction):
+        trains_free[instance.train_id] = True
+        for seg in segments:
+            seats = session.query(Seats_Free).filter(Seats_Free.train_id == instance.train_id
+                                                    and Seats_Free.seat_free_date == day
+                                                    and Seats_Free.segment_id == seg).first().freeseat
+            if seats < num_passengers:
+                trains_free[instance.train_id] = False
+    # print("Trains: ", trains_free)
+    # print("Fare: ", fare)
+    trains_free["fare"] = fare
+    return trains_free
 
-    for instance in session.query(Trains).filter(Train.train_direction = trip_direction):
-        pass
-        # TODO: Finish this function (stopped to push progress)
+first = find_trains('Boston, MA - South Station', 'Washington, DC - Union Station', [5,0,0,0,0], '2018-06-01')
+second = find_trains('Wilmington, DE - J.R. Biden, Jr. Station', 'Boston, MA - South Station',  [0,100,100,100,100], '2017-12-30')
+
+for key, value in first.items():
+    if(key != 'fare'):
+        print("Train ",key,": ",value)
+    else:
+        print("Full Fare: ", value)
