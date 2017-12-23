@@ -6,9 +6,9 @@ import datetime
 import pymysql
 pymysql.install_as_MySQLdb()
 
-engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
+#engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
 
-# engine = create_engine("mysql://root@localhost/F17336Pteam6")
+engine = create_engine("mysql://root@localhost/F17336Pteam6")
 
 Base = declarative_base()
 metadata = MetaData(bind=engine)
@@ -141,10 +141,15 @@ def create_reservation_and_trips(train_id, departure_station, departure_time, ar
         trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
         base_fare += trip_seg.first().seg_fare
 
-    reservation = Reservations(passenger_id=find_or_create_passenger(booker['email'], booker['first_name'], booker['last_name']), date=datetime.datetime.strptime(day, '%Y-%m-%d').date())
-    reservation_id = reservation.reservation_id
+    passenger_id=find_or_create_passenger(booker['email'], booker['first_name'], booker['last_name'])
+    date=datetime.datetime.strptime(day, '%Y-%m-%d').date()
+
+    reservation = Reservations(passenger_id=passenger_id, date=date)
     session.add(reservation)
     session.commit()
+
+    reservation = session.query(Reservations).filter(Reservations.passenger_id == passenger_id).filter(Reservations.date == date).first()
+    reservation_id = reservation.reservation_id
 
     try:
         fare_types = get_fare_type()
@@ -156,8 +161,7 @@ def create_reservation_and_trips(train_id, departure_station, departure_time, ar
     for idx, passenger_type in enumerate(passengers):
         rate_tuple = fare_types[idx+1]
         for i in range(passenger_type):
-            print(departure_time, departure_station, arrival_station, rate_tuple[0], base_fare*rate_tuple[1], train_id, reservation_id)
-            trip = Trip(trip_time_start=departure_time, trip_station_start=departure_station, trip_station_end=arrival_station, fare_type=rate_tuple[0], fare=base_fare*rate_tuple[1], train_id=train_id, reservation_id=reservation_id)
+            trip = Trips(trip_time_start=departure_time, trip_station_start=station_start_id, trip_station_end=station_end_id, fare_type=rate_tuple[0], fare=base_fare*rate_tuple[1], train_id=train_id, reservation_id=reservation_id)
             session.add(trip)
             session.commit()
 
