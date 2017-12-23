@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, redirect, url_for, flash, request
-from forms import GetTrainsForm, ReservationForm
+from forms import GetTrainsForm, ReservationForm, GetReservationsForm, CancelReservationForm
 import os
 
 app = Flask(__name__)
@@ -29,7 +29,7 @@ def index():
     num_military = request.args.get('num_military', default=0, type=int)
     num_pets = request.args.get('num_pets', default=0, type=int)
 
-    print(date_year, date_month, date_day, station_start, station_end, num_adult, num_child, num_senior, num_military, num_pets)
+    # print(date_year, date_month, date_day, station_start, station_end, num_adult, num_child, num_senior, num_military, num_pets)
 
     # if there are no trains available after filtering the database
     # do this:
@@ -54,21 +54,50 @@ def make_reservation(train_id=None):
             # add this reservation to the database and update accordingly
             # sqlalchemy stuff goes here
 
-            return redirect(url_for('successful_reservation'))
+            message = 'The reservation has been made successfully!'
+            return render_template('success.html', message=message)
         else:
             return render_template('makereservation.html', form=form)
 
 @app.route('/reservations/success')
-def successful_reservation():
-    return render_template('success.html')
+def success(message):
+    return render_template('success.html', message=message)
 
 @app.route('/reservations/rebook')
 def rebook_reservation():
     return render_template('rebookreservation.html')
 
-@app.route('/reservations/cancel')
-def cancel_reservation():
-    return render_template('cancelreservation.html')
+@app.route('/reservations/cancel', methods=['GET', 'POST'])
+def cancel_reservation(email=None, reservations=None, reservation_id=None):
+    form = GetReservationsForm()
+    form2 = CancelReservationForm()
+
+    if request.method == 'GET':
+        return render_template('getreservations.html', form=form)
+    elif request.method == 'POST':
+        reservation_id = request.args.get('reservation_id', default=None, type=int)
+
+        if reservation_id is not None:
+            # query the database for the reservation given by
+            # this reservation id
+            # cancel the reservation
+
+            message = 'The reservation has been cancelled. We will refund you shortly.'
+            return render_template('success.html', message=message)
+            
+        elif form.validate():
+            # query the database for any reservations for this person
+
+            # replace reservations with something useful
+            # i just used this for testing
+            reservations = [1, 2, 4]
+
+            return render_template('cancelreservation.html',
+                                   form2=form2,
+                                   email=form.email.data,
+                                   reservations=reservations)
+        else:
+            return render_template('getreservations.html', form=form)
 
 # Run Flask web server
 if __name__ == '__main__':

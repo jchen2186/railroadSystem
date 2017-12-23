@@ -53,3 +53,12 @@ class ReservationForm(FlaskForm):
     credit_card = StringField(label='Credit Card Number', id='credit_card',
                               validators=[DataRequired('Please enter your credit card information.')])
     submit = SubmitField('Make Reservation')
+
+class GetReservationsForm(FlaskForm):
+    email = StringField(label='Email Address', id='email',
+                        validators=[DataRequired('Please enter an email address.'),
+                                    Email(message='Please enter a valid email address.')])
+    submit = SubmitField('View Your Reservations')
+
+class CancelReservationForm(FlaskForm):
+    submit = SubmitField('Cancel')

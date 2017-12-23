@@ -47,35 +47,41 @@
       <form action="{{ url_for('make_reservation', train_id=1) }}" method="POST">
         {{ form.hidden_tag() }}
 
-        <div class="field">
-          <div class="control">
-            <label>{{ form.first_name.label }}</label>
-            {{ form.first_name(class="input") }}
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <div class="control">
+                <label class="label">{{ form.first_name.label }}</label>
+                {{ form.first_name(class="input") }}
 
-            {% if form.first_name.errors %}
-              {% for error in form.first_name.errors %}
-                <p class="has-text-danger">{{ error }}</p>
-              {% endfor %}
-            {% endif %}
+                {% if form.first_name.errors %}
+                  {% for error in form.first_name.errors %}
+                    <p class="has-text-danger">{{ error }}</p>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="field">
+              <div class="control">
+                <label class="label">{{ form.last_name.label }}</label>
+                {{ form.last_name(class="input") }}
+
+                {% if form.last_name.errors %}
+                  {% for error in form.last_name.errors %}
+                    <p class="has-text-danger">{{ error }}</p>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="field">
           <div class="control">
-            <label>{{ form.last_name.label }}</label>
-            {{ form.last_name(class="input") }}
-
-            {% if form.last_name.errors %}
-              {% for error in form.last_name.errors %}
-                <p class="has-text-danger">{{ error }}</p>
-              {% endfor %}
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="control">
-            <label>{{ form.email.label }}</label>
+            <label class="label">{{ form.email.label }}</label>
             {{ form.email(class="input") }}
 
             {% if form.email.errors %}
@@ -88,7 +94,7 @@
 
         <div class="field">
           <div class="control">
-            <label>{{ form.credit_card.label }}</label>
+            <label class="label">{{ form.credit_card.label }}</label>
             {{ form.credit_card(class="input") }}
 
             {% if form.credit_card.errors %}
