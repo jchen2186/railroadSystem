@@ -94,6 +94,7 @@
       <tr>
         <th>Select</th>
         <th>Train ID</th>
+        <th>Date</th>
         <th>Departure Station</th>
         <th>Departure Time</th>
         <th>Arrival Station</th>
@@ -107,6 +108,7 @@
       <tr>
         <th>Select</th>
         <th>Train ID</th>
+        <th>Date</th>
         <th>Departure Station</th>
         <th>Departure Time</th>
         <th>Arrival Station</th>
@@ -119,8 +121,9 @@
     <tbody>
       {% for row in results %}
         <tr>
-          <td><a href={{ url_for('make_reservation', date=date, train_id=row[0], departure_station = row[1], departure_time = row[2], arrival_station = row[3], arrival_time = row[4], seats_available = row[5], price = row[6], num_adult = passengers[0], num_child = passengers[1], num_senior = passengers[2], num_military = passengers[3], num_pets = passengers[4]) }} class="button is-info">Select</a></td>
+          <td><a href={{ url_for('make_reservation', date=row[7], train_id=row[0], departure_station = row[1], departure_time = row[2], arrival_station = row[3], arrival_time = row[4], seats_available = row[5], price = row[6], num_adult = passengers[0], num_child = passengers[1], num_senior = passengers[2], num_military = passengers[3], num_pets = passengers[4]) }} class="button is-info">Select</a></td>
           <td>{{ row[0] }}</td>
+          <td>{{ row[7] }}</td>
           <td>{{ row[1] }}</td>
           <td>{{ row[2] }}</td>
           <td>{{ row[3] }}</td>

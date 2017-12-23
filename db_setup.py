@@ -6,9 +6,9 @@ import datetime
 import pymysql
 pymysql.install_as_MySQLdb()
 
-engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
+#engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
 
-#engine = create_engine("mysql://root@localhost/F17336Pteam6")
+engine = create_engine("mysql://root@localhost/F17336Pteam6")
 
 Base = declarative_base()
 metadata = MetaData(bind=engine)
@@ -48,12 +48,15 @@ def find_or_create_passenger(email, first_name, last_name):
     for instance in session.query(Passengers):
         if instance.passenger_email == email:
             passenger_id = instance.passenger_id
-
     if passenger_id == -1:
         passenger = Passengers(passenger_email = email, passenger_fname = first_name, passenger_lname = last_name)
         passenger_id = passenger.passenger_id
         session.add(passenger)
         session.commit()
+    if passenger_id == None:
+        for instance in session.query(Passengers):
+            if instance.passenger_email == email:
+                passenger_id = instance.passenger_id
     return(passenger_id)
 
 def find_station(station_name):
@@ -129,17 +132,16 @@ def get_fare_type():
         retval[t.fare_id] = (t.fare_type, t.fare_rate)
     return retval
 
-def create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker):
+def create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker, day):
     station_start_id = int(find_station(departure_station))
     station_end_id = int(find_station(arrival_station))
     segments = segment_list(station_start_id, station_end_id)
     base_fare = 0
-    passenger_id = find_or_create_passenger(booker['email'], booker['first_name'], booker['last_name'])
     for seg in segments:
         trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
         base_fare += trip_seg.first().seg_fare
 
-    reservation = Reservation(passenger_id=passenger_id)
+    reservation = Reservations(passenger_id=find_or_create_passenger(booker['email'], booker['first_name'], booker['last_name']), date=datetime.datetime.strptime(day, '%Y-%m-%d').date())
     reservation_id = reservation.reservation_id
     session.add(reservation)
     session.commit()
@@ -150,9 +152,11 @@ def create_reservation_and_trips(train_id, departure_station, departure_time, ar
         session.rollback()
         fare_types = get_fare_type()
 
+    print("PASSENGERS: ", passengers)
     for idx, passenger_type in enumerate(passengers):
         rate_tuple = fare_types[idx+1]
         for i in range(passenger_type):
+            print(departure_time, departure_station, arrival_station, rate_tuple[0], base_fare*rate_tuple[1], train_id, reservation_id)
             trip = Trip(trip_time_start=departure_time, trip_station_start=departure_station, trip_station_end=arrival_station, fare_type=rate_tuple[0], fare=base_fare*rate_tuple[1], train_id=train_id, reservation_id=reservation_id)
             session.add(trip)
             session.commit()

@@ -31,7 +31,7 @@ def search():
     trains = find_trains(station_start, station_end, passengers, date)
     print(trains)
 
-    train_results = [(train_id, find_station_name(station_start), get_station_train_departure(train_id, station_start), find_station_name(station_end), get_station_train_arrival(train_id, station_end), trains[0][train_id], trains[1]) for train_id in trains[0]]
+    train_results = [(train_id, find_station_name(station_start), get_station_train_departure(train_id, station_start), find_station_name(station_end), get_station_train_arrival(train_id, station_end), trains[0][train_id], trains[1], date) for train_id in trains[0]]
     print(train_results)
     # if there are no trains available after filtering the database
     # do this:
@@ -77,7 +77,8 @@ def make_reservation(train_id=None):
             }
 
             passengers = [num_adult, num_child, num_senior, num_military, num_pets]
-            create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker)
+            print('PASSENGERS FROM FORM: {}'.format(passengers))
+            create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker, date)
 
             message = 'The reservation has been made successfully!'
             return render_template('success.html', message=message)
