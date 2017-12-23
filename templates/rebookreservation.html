@@ -11,7 +11,52 @@
 </section>
 
 <section class="section">
-  
+  <div class="container content columns">
+    <div class="column is-two-thirds is-offset-2">
+
+      <!-- list out all of the reservations for this user -->
+      {% if reservations|length > 0 %}
+        <!-- use a for loop to list out all of the tickets and related info -->
+        <table class="table is-hoverable" align="center" width="75%">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Reservation ID</th>
+              <th>Train ID</th>
+              <th>Start Station</th>
+              <th>End Station</th>
+              <th>Arrival time at the start station</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+
+          {% for reservation in reservations %}
+            <tr>
+              <td>
+                <!-- a form just for the button -->
+                <!-- replace the reservation_id with something useful -->
+                <!-- really ugly way of doing this, but i can't think of anything else that can work at the moment -->
+
+                <form action="{{ url_for('rebook_reservation', reservation_id=1) }}" method="POST">
+                  {{ form2.submit(class="button is-danger") }}
+                </form>
+              </td>
+              <td>reservation id here</td>
+              <td>train id here</td>
+              <td>start station here</td>
+              <td>end station here</td>
+              <td>arrival time here</td>
+              <td>price here</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <h2 class="has-text-danger">Whoops! It looks like you haven't made any reservations yet.</h2>
+      {% endif %}
+
+    </div>
+
+  </div>
 </section>
 
 {% endblock %}
