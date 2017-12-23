@@ -208,8 +208,6 @@ def cancel_res(reservation_id):
     # commit
     session.commit()
 
-cancel_res(1)
-
 if __name__ == "__main__":
     first = find_trains(1,25,[5,0,0,0,0], "2018-06-01")
     second = find_trains(20,1, [0,100,100,100,100], '2017-12-30')
