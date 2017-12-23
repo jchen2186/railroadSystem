@@ -3,10 +3,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
 
-#import pymysql
-#pymysql.install_as_MySQLdb()
+import pymysql
+pymysql.install_as_MySQLdb()
 
-engine = create_engine('postgres://localhost:5432/F17336Pteam6')
+engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
 
 Base = declarative_base()
 metadata = MetaData(bind=engine)
