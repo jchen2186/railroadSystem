@@ -90,6 +90,9 @@ def rebook_reservation(email=None, reservations=None, reservation_id=None):
 
             reservations = get_my_trips(email)
 
+            # for quick testing
+            reservations = [[1, 2, 3, 4, 5, 6]]
+
             if not reservations:
                 reservations = []
 
