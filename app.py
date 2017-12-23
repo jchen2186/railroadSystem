@@ -51,7 +51,18 @@ def make_reservation(train_id=None):
     form = ReservationForm()
 
     if request.method == 'GET':
-        return render_template('makereservation.html', form=form)
+        train_id = request.args.get('train_id', type=int)
+        departure_station = request.args.get('departure_station', type=str)
+        departure_time = request.args.get('departure_time', type=str)
+        arrival_station = request.args.get('arrival_station', type=str)
+        arrival_time = request.args.get('arrival_time', type=str)
+        seats_available = request.args.get('seats_available', type=str)
+        price = request.args.get('price', type=str)
+
+        return render_template('makereservation.html', form=form, train_id=train_id,
+            departure_station=departure_station, departure_time=departure_time,
+            arrival_station=arrival_station, arrival_time=arrival_time,
+            seats_available=seats_available, price=price)
     elif request.method == 'POST':
         if form.validate():
             # add this reservation to the database and update accordingly

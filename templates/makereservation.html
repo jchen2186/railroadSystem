@@ -19,29 +19,31 @@
         <thead>
           <tr>
             <th>Train ID</th>
-            <th>Start Station</th>
-            <th>End Station</th>
-            <th>Arrival time at the start station</th>
-            <th>Number of Seats Free</th>
+            <th>Departure Station</th>
+            <th>Departure Time</th>
+            <th>Arrival Station</th>
+            <th>Arrival Time</th>
+            <th>Seats Available</th>
             <th>Price</th>
           </tr>
         </thead>
         <tr>
-          <td>train id here</td>
-          <td>start station here</td>
-          <td>end station here</td>
-          <td>arrival time here</td>
-          <td>num seats here</td>
-          <td>price here</td>
+          <td>{{ train_id }}</td>
+          <td>{{ departure_station }}</td>
+          <td>{{ departure_time }}</td>
+          <td>{{ arrival_station }}</td>
+          <td>{{ arrival_time }}</td>
+          <td>{{ seats_available }}</td>
+          <td>{{ price }}</td>
         </tr>
       </table>
 
       <div class="columns">
-        <div class="column"><strong>Adult</strong>: # here</div>
-        <div class="column"><strong>Child</strong>: # here</div>
-        <div class="column"><strong>Senior</strong>: # here</div>
-        <div class="column"><strong>Military</strong>: # here</div>
-        <div class="column"><strong>Pets</strong>: # here</div>
+        <div class="column"><strong>Adult</strong>:</div>
+        <div class="column"><strong>Child</strong>:</div>
+        <div class="column"><strong>Senior</strong>:</div>
+        <div class="column"><strong>Military</strong>:</div>
+        <div class="column"><strong>Pets</strong>:</div>
       </div>
 
       <form action="{{ url_for('make_reservation', train_id=1) }}" method="POST">
