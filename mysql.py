@@ -151,7 +151,7 @@ def get_my_trips(email):
     try:
         id = session.query(Passengers).filter(Passengers.email == email).first().passenger_id
     except AttributeError:
-        #return false if user not exist.
+        #return False if user not exist.
         return False
 
     # get all my reservations
@@ -207,8 +207,6 @@ def cancel_res(reservation_id):
     session.delete(trip)
     # commit
     session.commit()
-
-cancel_res(1)
 
 if __name__ == "__main__":
     first = find_trains(1,25,[5,0,0,0,0], "2018-06-01")

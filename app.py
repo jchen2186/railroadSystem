@@ -67,7 +67,7 @@ def success(message):
     return render_template('success.html', message=message)
 
 @app.route('/reservations/rebook', methods=['GET', 'POST'])
-def rebook_reservation():
+def rebook_reservation(email=None, reservations=None, reservation_id=None):
     form = GetReservationsForm()
     form2 = CancelReservationForm()
 
@@ -80,6 +80,7 @@ def rebook_reservation():
             # query the database for the reservation given by
             # this reservation id
             # cancel the reservation
+            cancel_res(reservation_id)
 
             message = 'The reservation has been cancelled. You can proceed to\
             rebooking your reservation here.'
@@ -88,9 +89,10 @@ def rebook_reservation():
         elif form.validate():
             # query the database for any reservations for this person
 
-            # replace reservations with something useful
-            # i just used this for testing
-            reservations = [1, 2, 4]
+            reservations = get_my_trips(email)
+
+            if not reservations:
+                reservations = []
 
             return render_template('rebookreservation.html',
                                    form2=form2,
@@ -113,6 +115,7 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
             # query the database for the reservation given by
             # this reservation id
             # cancel the reservation
+            cancel_res(reservation_id)
 
             message = 'The reservation has been cancelled. We will refund you shortly.'
             return render_template('success.html', message=message)
@@ -120,10 +123,10 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
         elif form.validate():
             # query the database for any reservations for this person
 
-            # replace reservations with something useful
-            # i just used this for testing
-            reservations = [1, 2, 4]
+            reservations = get_my_trips(email)
 
+            if not reservations:
+                reservations = []
             return render_template('cancelreservation.html',
                                    form2=form2,
                                    email=form.email.data,
