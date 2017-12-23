@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, redirect, url_for, flash, request
 from forms import GetTrainsForm, ReservationForm, GetReservationsForm, CancelReservationForm
+from mysql import *
 import os
 
 app = Flask(__name__)
@@ -7,6 +8,11 @@ app.secret_key = 'csc336railroad'
 
 @app.route('/', methods=['GET'])
 def index():
+    form = GetTrainsForm()
+    return render_template('index.html', form=form)
+
+@app.route('/search', methods=['GET'])
+def search():
     form = GetTrainsForm()
 
     date = request.args.get('date', default=None, type=str)
@@ -31,11 +37,19 @@ def index():
 
     # print(date_year, date_month, date_day, station_start, station_end, num_adult, num_child, num_senior, num_military, num_pets)
 
+	# Get available trains
+    passengers = [num_adult, num_child, num_senior, num_military, num_pets]
+    trains = find_trains(station_start, station_end, passengers, date)
+    print(trains)
+
+    train_results = [(train_id, find_station_name(station_start), find_station_name(station_end), '', '', trains[1]) for train_id in trains[0]]
+    print(train_results)
     # if there are no trains available after filtering the database
     # do this:
-    # return render_template('notrainsavailable.html')
+    if not len(train_results):
+        return render_template('notrainsavailable.html')
 
-    return render_template('index.html', form=form)
+    return render_template('index.html', form=form, results=train_results)
 
 # in case a user somehow finds themselves at this route, redirect to index
 @app.route('/reservations/', methods=['GET'])

@@ -1,6 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import datetime
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -36,7 +37,7 @@ class Trains(Base):
     __table__ = Table('trains', metadata, autoload=True)
 
 class Trips(Base):
-    __table__ = Table('stations', metadata, autoload=True)
+    __table__ = Table('trips', metadata, autoload=True)
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -56,6 +57,9 @@ def find_or_create_passenger(email, first_name, last_name):
 
 def find_station(station_name):
    return session.query(Stations).filter(Stations.station_name == station_name).first().station_id
+
+def find_station_name(station_id):
+   return session.query(Stations).filter(Stations.station_id == station_id).first().station_name
 
 def find_segment_fare(segment_id):
     return session.query(Segments).filter(Segments.segment_id == segment_id).first().seg_fare
@@ -82,37 +86,101 @@ def find_full_fare(list_of_segs, list_of_pass):
     for seg in list_of_segs:
         trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
         fare += trip_seg.first().seg_fare
-    fare *= rate
-    return fare
+    return fare * rate
 
 
 def find_trains(station_start, station_end, passengers, day):
-    station_start_id = find_station(station_start)
-    station_end_id = find_station(station_end)
+    # station_start_id = find_station(station_start)
+    # station_end_id = find_station(station_end)
+    station_start_id = int(station_start)
+    station_end_id = int(station_end)
     num_passengers = sum(passengers)
     segments = segment_list(station_start_id, station_end_id)
     fare = find_full_fare(segments, passengers)
     trip_direction = 0 if station_start_id < station_end_id else 1
     trains_free = {}
     # print(station_start,", ", station_end, ": ", segments)
-    for instance in session.query(Trains).filter(Trains.train_direction == trip_direction):
-        trains_free[instance.train_id] = True
-        for seg in segments:
-            seats = session.query(Seats_Free).filter(Seats_Free.train_id == instance.train_id
-                                                    and Seats_Free.seat_free_date == day
-                                                    and Seats_Free.segment_id == seg).first().freeseat
-            if seats < num_passengers:
-                trains_free[instance.train_id] = False
-    # print("Trains: ", trains_free)
-    # print("Fare: ", fare)
-    trains_free["fare"] = fare
-    return trains_free
-
-first = find_trains('Boston, MA - South Station', 'Washington, DC - Union Station', [5,0,0,0,0], '2018-06-01')
-second = find_trains('Wilmington, DE - J.R. Biden, Jr. Station', 'Boston, MA - South Station',  [0,100,100,100,100], '2017-12-30')
-
-for key, value in first.items():
-    if(key != 'fare'):
-        print("Train ",key,": ",value)
+    weekdays = datetime.datetime.strptime(day, '%Y-%m-%d').date().weekday()
+    if weekdays < 5:
+        weekdays = 1
     else:
-        print("Full Fare: ", value)
+        weekdays = 0
+    for instance in session.query(Trains).filter(Trains.train_direction == trip_direction).filter(Trains.train_days == weekdays):
+        trains_free[instance.train_id] = 500
+        for seg in segments:
+            seats = session.query(Seats_Free).filter(Seats_Free.train_id == instance.train_id).filter(Seats_Free.seat_free_date == day).filter(Seats_Free.segment_id == seg).first().freeseat
+            if seats < num_passengers:
+                trains_free[instance.train_id] = 0
+            else:
+                if(seats < trains_free[instance.train_id]):
+                    trains_free[instance.train_id] = seats
+    return [trains_free, fare, day]
+
+######## helper function
+def get_station_train_deprture(train_id, station_id):
+    return session.query(Stops_At).filter(Stops_At.train_id == train_id and Stops_At.station_id == station_id).first().time_out
+
+def get_station_train_arrival(train_id, station_id):
+    return session.query(Stops_At).filter(Stops_At.train_id == train_id and Stops_At.station_id == station_id).first().time_in
+
+######## cancel reservation.
+
+# return a list of list, in each inner list, there are reservation_id,
+# trip.data, trip_train_id and fare
+def get_my_trips(email):
+    try:
+        id = session.query(Passengers).filter(Passengers.email == email).first().passenger_id
+    except AttributeError:
+        #return false if user not exist.
+        return False
+
+    # get all my reservations
+    reservations = session.query(Reservations).filter(Reservations.paying_passenger_id == id)
+
+    all_trip = []
+
+    for res in reservations:
+        trip = session.query(Trips).filter(Trips.reservation_id == res.reservation_id).first()
+        # calculate train direction
+        if trip.trip_seg_start < trip.trip_seg_ends:
+            # going north
+            station_start_id = trip.trip_seg_start
+            station_end_id = trip.trip_seg_ends + 1
+        else:
+            #going south
+            station_start_id = trip.trip_seg_start + 1
+            station_end_id = trip.trip_seg_ends
+        # get the name of stations
+        station_start_name = session.query(Stations).filter(Stations.station_id == station_start_id).first().station_name
+        station_end_name = session.query(Stations).filter(Stations.station_id == station_end_id).first().station_name
+
+        # get arrival time
+        time = session.query(Stops_At).filter(Stops_At.train_id == trip.trip_train_id and
+                             Stops_At.station_id == station_start_id).first().time_in
+
+        list = [trip.reservation_id, trip.trip_train_id, station_start_name, station_end_name, str(time), str(trip.fare)]
+
+        all_trip.append(list)
+
+    return all_trip
+
+
+def cancel_res(reservation_id):
+    # TODO: increase seat_free HOLD HOLD
+
+    # delete trip first
+    trip = session.query(Trips).filter(Trips.reservation_id == reservation_id).first()
+    session.delete(trip)
+    # delete reservation
+    reservation = session.query(Reservations).filter(Reservations.reservation_id == reservation_id).first()
+    session.delete(reservation)
+
+    # commit
+    session.commit()
+
+if __name__ == "__main__":
+    first = find_trains(1,25,[5,0,0,0,0], "2018-06-01")
+    second = find_trains(20,1, [0,100,100,100,100], '2017-12-30')
+
+    print(first)
+    print(second)
