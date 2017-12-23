@@ -76,7 +76,7 @@ def make_reservation(train_id=None):
                 'email':form.email.data
             }
 
-            passengers = [num_adult, num_child, num_senior, num_military, num_pets]
+            passengers = [int(form.num_adult.data), int(form.num_child.data), int(form.num_senior.data), int(form.num_military.data), int(form.num_pets.data)]
             print('PASSENGERS FROM FORM: {}'.format(passengers))
             create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker, date)
 
