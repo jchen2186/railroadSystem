@@ -122,6 +122,41 @@ def find_trains(station_start, station_end, passengers, day):
                     trains_free[instance.train_id] = seats
     return [trains_free, fare, day]
 
+def get_fare_type():
+    returned = session.query(Fare_Types)
+    retval = {}
+    for t in returned:
+        retval[t.fare_id] = (t.fare_type, t.fare_rate)
+    return retval
+
+def create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker):
+    station_start_id = int(find_station(departure_station))
+    station_end_id = int(find_station(arrival_station))
+    segments = segment_list(station_start_id, station_end_id)
+    base_fare = 0
+    passenger_id = find_or_create_passenger(booker['email'], booker['first_name'], booker['last_name'])
+    for seg in segments:
+        trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
+        base_fare += trip_seg.first().seg_fare
+
+    reservation = Reservation(passenger_id=passenger_id)
+    reservation_id = reservation.reservation_id
+    session.add(reservation)
+    session.commit()
+
+    try:
+        fare_types = get_fare_type()
+    except:
+        session.rollback()
+        fare_types = get_fare_type()
+
+    for idx, passenger_type in enumerate(passengers):
+        rate_tuple = fare_types[idx+1]
+        for i in range(passenger_type):
+            trip = Trip(trip_time_start=departure_time, trip_station_start=departure_station, trip_station_end=arrival_station, fare_type=rate_tuple[0], fare=base_fare*rate_tuple[1], train_id=train_id, reservation_id=reservation_id)
+            session.add(trip)
+            session.commit()
+
 ######## helper function
 def get_station_train_departure(train_id, station_id):
     return session.query(Stops_At).filter(Stops_At.train_id == train_id and Stops_At.station_id == station_id).first().time_out

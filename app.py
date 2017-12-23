@@ -69,8 +69,14 @@ def make_reservation(train_id=None):
             seats_available=seats_available, price=price, passengers=[num_adult, num_child, num_senior, num_military, num_pets])
     elif request.method == 'POST':
         if form.validate():
+            booker = {
+                'first_name':form.first_name.data,
+                'last_name':form.last_name.data,
+                'email':form.email.data
+            }
+
             passengers = [num_adult, num_child, num_senior, num_military, num_pets]
-            create_reservation_and_trips(train_id, departure_station, arrival_station, passengers)
+            create_reservation_and_trips(train_id, departure_station, departure_time, arrival_station, passengers, booker)
 
             message = 'The reservation has been made successfully!'
             return render_template('success.html', message=message)
