@@ -80,6 +80,7 @@ def rebook_reservation(email=None, reservations=None, reservation_id=None):
             # query the database for the reservation given by
             # this reservation id
             # cancel the reservation
+            cancel_res(reservation_id)
 
             message = 'The reservation has been cancelled. You can proceed to\
             rebooking your reservation here.'
@@ -89,9 +90,6 @@ def rebook_reservation(email=None, reservations=None, reservation_id=None):
             # query the database for any reservations for this person
 
             reservations = get_my_trips(email)
-
-            # for quick testing
-            reservations = [[1, 2, 3, 4, 5, 6]]
 
             if not reservations:
                 reservations = []
@@ -117,6 +115,7 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
             # query the database for the reservation given by
             # this reservation id
             # cancel the reservation
+            cancel_res(reservation_id)
 
             message = 'The reservation has been cancelled. We will refund you shortly.'
             return render_template('success.html', message=message)
