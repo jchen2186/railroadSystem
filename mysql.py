@@ -1,12 +1,13 @@
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import datetime
 
 import pymysql
 pymysql.install_as_MySQLdb()
 
-engine = create_engine('mysql://root@localhost/railroad1')
-engine.execute("USE railroad1")
+engine = create_engine('mysql://root@localhost/F17336Pteam6')
+engine.execute("USE F17336Pteam6")
 
 Base = declarative_base()
 metadata = MetaData(bind=engine)
@@ -33,7 +34,7 @@ class Stops_At(Base):
     __table__ = Table('stops_at', metadata, autoload=True)
 
 class Trains(Base):
-    __table__ = Table('stations', metadata, autoload=True)
+    __table__ = Table('trains', metadata, autoload=True)
 
 class Trips(Base):
     __table__ = Table('trips', metadata, autoload=True)
@@ -55,9 +56,10 @@ def find_or_create_passenger(email, first_name, last_name):
     return(passenger_id)
 
 def find_station(station_name):
-    for instance in session.query(Stations):
-        if instance.station_name == station_name:
-            return instance.station_id
+   return session.query(Stations).filter(Stations.station_name == station_name).first().station_id
+
+def find_station_name(station_id):
+   return session.query(Stations).filter(Stations.station_id == station_id).first().station_name
 
 def find_segment_fare(segment_id):
     return session.query(Segments).filter(Segments.segment_id == segment_id).first().seg_fare
@@ -65,15 +67,54 @@ def find_segment_fare(segment_id):
 def find_fare_adjustment(fare_type):
     return session.query(Fare_Types).filter(Fare_Types.fare_type == fare_type).first().fare_rate
 
-#def find_trains(station_start, station_end, passengers, day):
-#    station_start_id = find_station(station_start)
-#    station_end_id = find_station(station_end)
-#    num_passengers = sum(passengers)
-#    trip_direction = 0 if station_start_id < station_end_id else 1
+def segment_list(station_n, station_s):
+    # Create a list of segments
+    segments = []
+    if station_n < station_s:
+        for i in range(station_n, station_s):
+            segments += [i]
+    else:
+        for i in range(station_s, station_n):
+            segments += [i]
+    return segments
 
-#    for instance in session.query(Trains).filter(Train.train_direction = trip_direction):
-#        pass
-        # TODO: Finish this function (stopped to push progress)
+def find_full_fare(list_of_segs, list_of_pass):
+    rate = 0
+    fare = 0
+    for i, inst in enumerate(session.query(Fare_Types).filter(True)):
+        rate += list_of_pass[i] * inst.fare_rate
+    for seg in list_of_segs:
+        trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
+        fare += trip_seg.first().seg_fare
+    return fare * rate
+
+
+def find_trains(station_start, station_end, passengers, day):
+    # station_start_id = find_station(station_start)
+    # station_end_id = find_station(station_end)
+    station_start_id = int(station_start)
+    station_end_id = int(station_end)
+    num_passengers = sum(passengers)
+    segments = segment_list(station_start_id, station_end_id)
+    fare = find_full_fare(segments, passengers)
+    trip_direction = 0 if station_start_id < station_end_id else 1
+    trains_free = {}
+    # print(station_start,", ", station_end, ": ", segments)
+    weekdays = datetime.datetime.strptime(day, '%Y-%m-%d').date().weekday()
+    if weekdays < 5:
+        weekdays = 1
+    else:
+        weekdays = 0
+    for instance in session.query(Trains).filter(Trains.train_direction == trip_direction).filter(Trains.train_days == weekdays):
+        trains_free[instance.train_id] = 500
+        for seg in segments:
+            seats = session.query(Seats_Free).filter(Seats_Free.train_id == instance.train_id).filter(Seats_Free.seat_free_date == day).filter(Seats_Free.segment_id == seg).first().freeseat
+            if seats < num_passengers:
+                trains_free[instance.train_id] = 0
+            else:
+                if(seats < trains_free[instance.train_id]):
+                    trains_free[instance.train_id] = seats
+    return [trains_free, fare, day]
 
 ######## helper function
 def get_station_train_deprture(train_id, station_id):
@@ -137,5 +178,9 @@ def cancel_res(reservation_id):
     # commit
     session.commit()
 
-print(get_station_train_arrival(1, 2))
+if __name__ == "__main__":
+    first = find_trains(1,25,[5,0,0,0,0], "2018-06-01")
+    second = find_trains(20,1, [0,100,100,100,100], '2017-12-30')
 
+    print(first)
+    print(second)

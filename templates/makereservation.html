@@ -12,7 +12,107 @@
 </section>
 
 <section class="section">
-  
+  <div class="container content columns">
+    <div class="column is-two-thirds is-offset-2">
+      <h2>Selected Train</h2>
+      <table class="table is-hoverable" align="center" width="75%">
+        <thead>
+          <tr>
+            <th>Train ID</th>
+            <th>Start Station</th>
+            <th>End Station</th>
+            <th>Arrival time at the start station</th>
+            <th>Number of Seats Free</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tr>
+          <td>train id here</td>
+          <td>start station here</td>
+          <td>end station here</td>
+          <td>arrival time here</td>
+          <td>num seats here</td>
+          <td>price here</td>
+        </tr>
+      </table>
+
+      <div class="columns">
+        <div class="column"><strong>Adult</strong>: # here</div>
+        <div class="column"><strong>Child</strong>: # here</div>
+        <div class="column"><strong>Senior</strong>: # here</div>
+        <div class="column"><strong>Military</strong>: # here</div>
+        <div class="column"><strong>Pets</strong>: # here</div>
+      </div>
+
+      <form action="{{ url_for('make_reservation', train_id=1) }}" method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="columns">
+          <div class="column">
+            <div class="field">
+              <div class="control">
+                <label class="label">{{ form.first_name.label }}</label>
+                {{ form.first_name(class="input") }}
+
+                {% if form.first_name.errors %}
+                  {% for error in form.first_name.errors %}
+                    <p class="has-text-danger">{{ error }}</p>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="field">
+              <div class="control">
+                <label class="label">{{ form.last_name.label }}</label>
+                {{ form.last_name(class="input") }}
+
+                {% if form.last_name.errors %}
+                  {% for error in form.last_name.errors %}
+                    <p class="has-text-danger">{{ error }}</p>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="control">
+            <label class="label">{{ form.email.label }}</label>
+            {{ form.email(class="input") }}
+
+            {% if form.email.errors %}
+              {% for error in form.email.errors %}
+                <p class="has-text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="control">
+            <label class="label">{{ form.credit_card.label }}</label>
+            {{ form.credit_card(class="input") }}
+
+            {% if form.credit_card.errors %}
+              {% for error in form.credit_card.errors %}
+                <p class="has-text-danger">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="control">
+          {{ form.submit(class="button is-link") }}
+        </div>
+
+      </form>
+    </div>
+  </div>
+
 </section>
 
 

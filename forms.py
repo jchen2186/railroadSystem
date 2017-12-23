@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, SelectField, SubmitField
+from wtforms.validators import DataRequired, Email
 
 class GetTrainsForm(FlaskForm):
     """
@@ -40,3 +41,24 @@ class GetTrainsForm(FlaskForm):
     num_military = StringField(label='Military', id='num_military')
     num_pets = StringField(label='Pets', id='num_pets')
     submit = SubmitField('Search for a train')
+
+class ReservationForm(FlaskForm):
+    email = StringField(label='Email Address', id='email',
+                        validators=[DataRequired('Please enter an email address.'),
+                                    Email(message='Please enter a valid email address.')])
+    first_name = StringField(label='First name', id='first_name',
+                             validators=[DataRequired('Please enter your first name.')])
+    last_name = StringField(label='Last name', id='last_name',
+                            validators=[DataRequired('Please enter your last name.')])
+    credit_card = StringField(label='Credit Card Number', id='credit_card',
+                              validators=[DataRequired('Please enter your credit card information.')])
+    submit = SubmitField('Make Reservation')
+
+class GetReservationsForm(FlaskForm):
+    email = StringField(label='Email Address', id='email',
+                        validators=[DataRequired('Please enter an email address.'),
+                                    Email(message='Please enter a valid email address.')])
+    submit = SubmitField('View Your Reservations')
+
+class CancelReservationForm(FlaskForm):
+    submit = SubmitField('Cancel')

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero is-success">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">Success!</h1>
+      <h2 class="subtitle">Your action was processed successfully.</h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content columns">
+    <div class="column is-two-thirds is-offset-2">
+      <h2 class="has-text-success">{{ message }}</h2>
+    </div>
+  </div>
+</section>
+{% endblock %}
