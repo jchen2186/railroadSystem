@@ -152,7 +152,7 @@ def get_my_trips(email):
         id = session.query(Passengers).filter(Passengers.email == email).first().passenger_id
     except AttributeError:
         #return false if user not exist.
-        return False
+        return []
 
     # get all my reservations
     reservations = session.query(Reservations).filter(Reservations.paying_passenger_id == id)
