@@ -40,12 +40,13 @@ def search():
 	# Get available trains
     passengers = [num_adult, num_child, num_senior, num_military, num_pets]
     trains = find_trains(station_start, station_end, passengers, date)
+    print(trains)
 
-    train_results = [(train_id, station_start, station_end, '', sum(passengers), trains[1]) for train_id in trains[0]]
-
+    train_results = [(train_id, find_station_name(station_start), find_station_name(station_end), '', '', trains[1]) for train_id in trains[0]]
+    print(train_results)
     # if there are no trains available after filtering the database
     # do this:
-    if len(train_results):
+    if not len(train_results):
         return render_template('notrainsavailable.html')
 
     return render_template('index.html', form=form, results=train_results)

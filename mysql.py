@@ -58,6 +58,9 @@ def find_or_create_passenger(email, first_name, last_name):
 def find_station(station_name):
    return session.query(Stations).filter(Stations.station_name == station_name).first().station_id
 
+def find_station_name(station_id):
+   return session.query(Stations).filter(Stations.station_id == station_id).first().station_name
+
 def find_segment_fare(segment_id):
     return session.query(Segments).filter(Segments.segment_id == segment_id).first().seg_fare
 
@@ -83,8 +86,7 @@ def find_full_fare(list_of_segs, list_of_pass):
     for seg in list_of_segs:
         trip_seg = session.query(Segments).filter(Segments.segment_id == seg)
         fare += trip_seg.first().seg_fare
-    fare *= rate
-    return fare
+    return fare * rate
 
 
 def find_trains(station_start, station_end, passengers, day):
