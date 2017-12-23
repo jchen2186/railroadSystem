@@ -87,8 +87,10 @@ def find_full_fare(list_of_segs, list_of_pass):
 
 
 def find_trains(station_start, station_end, passengers, day):
-    station_start_id = find_station(station_start)
-    station_end_id = find_station(station_end)
+    # station_start_id = find_station(station_start)
+    # station_end_id = find_station(station_end)
+    station_start_id = int(station_start)
+    station_end_id = int(station_end)
     num_passengers = sum(passengers)
     segments = segment_list(station_start_id, station_end_id)
     fare = find_full_fare(segments, passengers)
@@ -105,14 +107,14 @@ def find_trains(station_start, station_end, passengers, day):
                 trains_free[instance.train_id] = False
     # print("Trains: ", trains_free)
     # print("Fare: ", fare)
-    trains_free["fare"] = fare
-    return trains_free
+    return [trains_free, fare]
 
-first = find_trains('Boston, MA - South Station', 'Washington, DC - Union Station', [5,0,0,0,0], '2018-06-01')
-second = find_trains('Wilmington, DE - J.R. Biden, Jr. Station', 'Boston, MA - South Station',  [0,100,100,100,100], '2017-12-30')
+if __name__ == "__main__":
+    first = find_trains('Boston, MA - South Station', 'Washington, DC - Union Station', [5,0,0,0,0], '2018-06-01')
+    second = find_trains('Wilmington, DE - J.R. Biden, Jr. Station', 'Boston, MA - South Station',  [0,100,100,100,100], '2017-12-30')
 
-for key, value in first.items():
-    if(key != 'fare'):
-        print("Train ",key,": ",value)
-    else:
-        print("Full Fare: ", value)
+    for key, value in first.items():
+        if(key != 'fare'):
+            print("Train ",key,": ",value)
+        else:
+            print("Full Fare: ", value)
