@@ -67,7 +67,7 @@ def success(message):
     return render_template('success.html', message=message)
 
 @app.route('/reservations/rebook', methods=['GET', 'POST'])
-def rebook_reservation():
+def rebook_reservation(email=None, reservations=None, reservation_id=None):
     form = GetReservationsForm()
     form2 = CancelReservationForm()
 
@@ -89,6 +89,9 @@ def rebook_reservation():
             # query the database for any reservations for this person
 
             reservations = get_my_trips(email)
+
+            if not reservations:
+                reservations = []
 
             return render_template('rebookreservation.html',
                                    form2=form2,
@@ -120,6 +123,8 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
 
             reservations = get_my_trips(email)
 
+            if not reservations:
+                reservations = []
             return render_template('cancelreservation.html',
                                    form2=form2,
                                    email=form.email.data,
