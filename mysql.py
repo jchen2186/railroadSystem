@@ -1,13 +1,13 @@
 from sqlalchemy import *
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
 
 import pymysql
 pymysql.install_as_MySQLdb()
 
-engine = create_engine('mysql://root@localhost/F17336Pteam6')
-engine.execute("USE F17336Pteam6")
+engine = create_engine('mysql://root@localhost/railroad1')
+engine.execute("USE railroad1")
 
 Base = declarative_base()
 metadata = MetaData(bind=engine)
@@ -20,6 +20,7 @@ class Passengers(Base):
 
 class Reservations(Base):
     __table__ = Table('reservations', metadata, autoload=True)
+    parent = relationship("Trips", backref = backref("Reservations", cascade = "all, delete"))
 
 class Seats_Free(Base):
     __table__ = Table('seats_free', metadata, autoload=True)
@@ -118,10 +119,29 @@ def find_trains(station_start, station_end, passengers, day):
 
 ######## helper function
 def get_station_train_deprture(train_id, station_id):
-    return session.query(Stops_At).filter(Stops_At.train_id == train_id and Stops_At.station_id == station_id).first().time_out
+    return session.query(Stops_At).filter(Stops_At.train_id == train_id, Stops_At.station_id == station_id).first().time_out
 
 def get_station_train_arrival(train_id, station_id):
-    return session.query(Stops_At).filter(Stops_At.train_id == train_id and Stops_At.station_id == station_id).first().time_in
+    return session.query(Stops_At).filter(Stops_At.train_id == train_id, Stops_At.station_id == station_id).first().time_in
+
+def increase_seat_free(train_id, start_seg_id, end_seg_id, seat_free_date):
+    # per-con: there are at least one seat in every segment
+    for seg_id in range(start_seg_id, end_seg_id + 1):
+        # get segment
+        seg = session.query(Seats_Free).filter(Seats_Free.train_id == train_id, Seats_Free.segment_id == seg_id, Seats_Free.seat_free_date == seat_free_date).first()
+        # update free seats number
+        seg.freeseat = seg.freeseat + 1
+        session.commit()
+
+def decrease_seat_free(train_id, start_seg_id, end_seg_id, seat_free_date):
+    # per-con: there are at least one seat in every segment
+    for seg_id in range(start_seg_id, end_seg_id + 1):
+        # get segment
+        seg = session.query(Seats_Free).filter(Seats_Free.train_id == train_id, Seats_Free.segment_id == seg_id, Seats_Free.seat_free_date == seat_free_date).first()
+        # update free seats number
+        seg.freeseat = seg.freeseat - 1
+    # commit
+    session.commit()
 
 ######## cancel reservation.
 
@@ -155,7 +175,7 @@ def get_my_trips(email):
         station_end_name = session.query(Stations).filter(Stations.station_id == station_end_id).first().station_name
 
         # get arrival time
-        time = session.query(Stops_At).filter(Stops_At.train_id == trip.trip_train_id and
+        time = session.query(Stops_At).filter(Stops_At.train_id == trip.trip_train_id,
                              Stops_At.station_id == station_start_id).first().time_in
 
         list = [trip.reservation_id, trip.trip_train_id, station_start_name, station_end_name, str(time), str(trip.fare)]
@@ -166,17 +186,29 @@ def get_my_trips(email):
 
 
 def cancel_res(reservation_id):
-    # TODO: increase seat_free HOLD HOLD
-
-    # delete trip first
+    # get trip and reservation
     trip = session.query(Trips).filter(Trips.reservation_id == reservation_id).first()
-    session.delete(trip)
-    # delete reservation
     reservation = session.query(Reservations).filter(Reservations.reservation_id == reservation_id).first()
-    session.delete(reservation)
 
+    # calculate train direction
+    if trip.trip_seg_start < trip.trip_seg_ends:
+        # going north
+        station_start_id = trip.trip_seg_start
+        station_end_id = trip.trip_seg_ends + 1
+    else:
+        #going south
+        station_start_id = trip.trip_seg_start + 1
+        station_end_id = trip.trip_seg_ends
+
+    # increase seat_free
+    increase_seat_free(trip.trip_train_id, station_start_id, station_end_id, trip.trip_date)
+    # delete
+    session.delete(reservation)
+    session.delete(trip)
     # commit
     session.commit()
+
+cancel_res(1)
 
 if __name__ == "__main__":
     first = find_trains(1,25,[5,0,0,0,0], "2018-06-01")
