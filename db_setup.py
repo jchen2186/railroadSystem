@@ -98,7 +98,11 @@ def find_trains(station_start, station_end, passengers, day):
     station_end_id = int(station_end)
     num_passengers = sum(passengers)
     segments = segment_list(station_start_id, station_end_id)
-    fare = find_full_fare(segments, passengers)
+    try:
+        fare = find_full_fare(segments, passengers)
+    except:
+        session.rollback()
+        fare = find_full_fare(segments, passengers)
     trip_direction = 0 if station_start_id < station_end_id else 1
     trains_free = {}
     # print(station_start,", ", station_end, ": ", segments)
