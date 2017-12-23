@@ -2,6 +2,18 @@
 
 {% block content %}
 
+<!-- pick the right hero for the situation since we need to use this form for both situations -->
+{% if reason == 'rebook' %}
+<section class="hero is-info">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">Rebook a Reservation</h1>
+      <h2 class="subtitle">Change of plans? Rebook your reservation!</h2>
+    </div>
+  </div>
+</section>
+
+{% elif reason == 'cancel' %}
 <section class="hero is-warning">
   <div class="hero-body">
     <div class="container">
@@ -10,13 +22,21 @@
     </div>
   </div>
 </section>
+{% endif %}
 
 <section class="section">
   <div class="container content columns">
     <div class="column is-two-thirds is-offset-2">
       
       <h3>Please enter the email you used to make your reservation:</h3>
-      <form action="{{ url_for('cancel_reservation') }}" method="POST">
+
+      <!-- send the form to different places depending on the reason for getting the reservations -->
+      {% if reason == 'rebook' %}
+        <form action="{{ url_for('rebook_reservation') }}" method="POST">
+      {% elif reason == 'cancel' %}
+        <form action="{{ url_for('cancel_reservation') }}" method="POST">
+      {% endif %}
+
         {{ form.hidden_tag() }}
 
         <div class="field">
