@@ -21,7 +21,7 @@ class Passengers(Base):
 
 class Reservations(Base):
     __table__ = Table('reservations', metadata, autoload=True)
-    parent = relationship("Trips", backref = backref("Reservations", cascade = "all, delete"))
+    # parent = relationship("Trips", backref = backref("Reservations", cascade = "all, delete"))
 
 class Seats_Free(Base):
     __table__ = Table('seats_free', metadata, autoload=True)
