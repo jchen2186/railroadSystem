@@ -49,6 +49,7 @@ def reservation():
 @app.route('/reservations/create', methods=['GET', 'POST'])
 def make_reservation(train_id=None):
     form = ReservationForm()
+    date = request.args.get('date', type=str)
     train_id = request.args.get('train_id', type=int)
     departure_station = request.args.get('departure_station', type=str)
     departure_time = request.args.get('departure_time', type=str)
@@ -63,7 +64,7 @@ def make_reservation(train_id=None):
     num_pets = request.args.get('num_pets', type=int)
 
     if request.method == 'GET':
-        return render_template('makereservation.html', form=form, train_id=train_id,
+        return render_template('makereservation.html', form=form, date=date, train_id=train_id,
             departure_station=departure_station, departure_time=departure_time,
             arrival_station=arrival_station, arrival_time=arrival_time,
             seats_available=seats_available, price=price, passengers=[num_adult, num_child, num_senior, num_military, num_pets])
@@ -81,7 +82,7 @@ def make_reservation(train_id=None):
             message = 'The reservation has been made successfully!'
             return render_template('success.html', message=message)
         else:
-            return render_template('makereservation.html', form=form, train_id=train_id,
+            return render_template('makereservation.html', form=form, date=date, train_id=train_id,
             departure_station=departure_station, departure_time=departure_time,
             arrival_station=arrival_station, arrival_time=arrival_time,
             seats_available=seats_available, price=price, passengers=[num_adult, num_child, num_senior, num_military, num_pets])

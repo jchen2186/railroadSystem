@@ -46,7 +46,7 @@
         <div class="column"><strong>Pets</strong>: {{ passengers[4] }}</div>
       </div>
 
-      <form action="{{ url_for('make_reservation', train_id=train_id, departure_station=departure_station, departure_time=departure_time, arrival_station=arrival_station, arrival_time=arrival_time, seats_available=seats_available, price=price, num_adult=num_adult, num_child=num_child, num_senior=num_senior, num_military=num_military, num_pets=num_pets) }}" method="POST">
+      <form action="{{ url_for('make_reservation', date=date, train_id=train_id, departure_station=departure_station, departure_time=departure_time, arrival_station=arrival_station, arrival_time=arrival_time, seats_available=seats_available, price=price, num_adult=num_adult, num_child=num_child, num_senior=num_senior, num_military=num_military, num_pets=num_pets) }}" method="POST">
         {{ form.hidden_tag() }}
 
         <div class="columns">
