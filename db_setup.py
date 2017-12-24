@@ -235,7 +235,7 @@ def get_my_trips(email):
         return False
 
     # get all my reservations
-    reservations = session.query(Reservations).filter(Reservations.paying_passenger_id == id)
+    reservations = session.query(Reservations).filter(Reservations.passenger_id == id)
 
     all_trip = []
 
