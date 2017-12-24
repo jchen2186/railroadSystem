@@ -10,8 +10,11 @@ import os
 
 ssh_user = os.environ.get('ssh_user')
 ssh_pass = os.environ.get('ssh_pass')
+mysql_user = os.environ.get('mysql_user')
+mysql_pass = os.environ.get('mysql_pass')
 
 print(ssh_user,ssh_pass)
+print(mysql_user, mysql_pass, port)
 
 tunnel = sshtunnel.SSHTunnelForwarder(
         ('134.74.126.104', 22),
@@ -20,10 +23,7 @@ tunnel = sshtunnel.SSHTunnelForwarder(
         remote_bind_address=('134.74.146.21', 3306))
 tunnel.start()
 
-mysql_user = os.environ.get('mysql_user')
-mysql_pass = os.environ.get('mysql_pass')
 port = tunnel.local_bind_port
-print(mysql_user, mysql_pass, port)
 url = "mysql://{}:{}@localhost:{}/F17336Pteam6".format(mysql_user, mysql_pass, port)
 engine = create_engine(url)
 
