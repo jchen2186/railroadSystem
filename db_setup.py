@@ -228,8 +228,8 @@ def decrease_seat_free(train_id, start_seg_id, end_seg_id, seat_free_date):
 # return a list of list, in each inner list, there are reservation_id,
 # trip.data, trip_train_id and fare
 def get_my_trips(email):
-    #try:
-    id = session.query(Passengers).filter(Passengers.passenger_email == email).first().passenger_id
+    try:
+    	id = session.query(Passengers).filter(Passengers.passenger_email == email).first().passenger_id
     except AttributeError:
         #return False if user not exist.
         return False
