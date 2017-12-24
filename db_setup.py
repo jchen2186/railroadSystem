@@ -229,10 +229,10 @@ def decrease_seat_free(train_id, start_seg_id, end_seg_id, seat_free_date):
 # trip.data, trip_train_id and fare
 def get_my_trips(email):
     #try:
-    id = session.query(Passengers).filter(Passengers.email == email).first().passenger_id
-    #except AttributeError:
+    id = session.query(Passengers).filter(Passengers.passenger_email == email).first().passenger_id
+    except AttributeError:
         #return False if user not exist.
-        #return False
+        return False
 
     # get all my reservations
     reservations = session.query(Reservations).filter(Reservations.passenger_id == id)
@@ -242,23 +242,23 @@ def get_my_trips(email):
     for res in reservations:
         trip = session.query(Trips).filter(Trips.reservation_id == res.reservation_id).first()
         # calculate train direction
-        if trip.trip_seg_start < trip.trip_seg_ends:
+        if trip.trip_station_start < trip.trip_station_end:
             # going north
-            station_start_id = trip.trip_seg_start
-            station_end_id = trip.trip_seg_ends + 1
+            station_start_id = trip.trip_station_start
+            station_end_id = trip.trip_station_end + 1
         else:
             #going south
-            station_start_id = trip.trip_seg_start + 1
-            station_end_id = trip.trip_seg_ends
+            station_start_id = trip.trip_station_start + 1
+            station_end_id = trip.trip_station_end
         # get the name of stations
         station_start_name = session.query(Stations).filter(Stations.station_id == station_start_id).first().station_name
         station_end_name = session.query(Stations).filter(Stations.station_id == station_end_id).first().station_name
 
         # get arrival time
-        time = session.query(Stops_At).filter(Stops_At.train_id == trip.trip_train_id,
+        time = session.query(Stops_At).filter(Stops_At.train_id == trip.train_id,
                              Stops_At.station_id == station_start_id).first().time_in
 
-        list = [trip.reservation_id, trip.trip_train_id, station_start_name, station_end_name, str(time), str(trip.fare)]
+        list = [trip.reservation_id, trip.train_id, station_start_name, station_end_name, str(time), str(trip.fare)]
 
         all_trip.append(list)
 
@@ -271,17 +271,17 @@ def cancel_res(reservation_id):
     reservation = session.query(Reservations).filter(Reservations.reservation_id == reservation_id).first()
 
     # calculate train direction
-    if trip.trip_seg_start < trip.trip_seg_ends:
+    if trip.trip_station_start < trip.trip_station_end:
         # going north
-        station_start_id = trip.trip_seg_start
-        station_end_id = trip.trip_seg_ends + 1
+        station_start_id = trip.trip_station_start
+        station_end_id = trip.trip_station_end + 1
     else:
         #going south
-        station_start_id = trip.trip_seg_start + 1
-        station_end_id = trip.trip_seg_ends
+        station_start_id = trip.trip_station_start + 1
+        station_end_id = trip.trip_station_end
 
     # increase seat_free
-    increase_seat_free(trip.trip_train_id, station_start_id, station_end_id, trip.trip_date)
+    increase_seat_free(trip.train_id, station_start_id, station_end_id, trip.trip_time_start)
     # delete
     session.delete(reservation)
     session.delete(trip)
