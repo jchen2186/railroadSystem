@@ -14,7 +14,7 @@ mysql_user = os.environ.get('mysql_user')
 mysql_pass = os.environ.get('mysql_pass')
 
 print(ssh_user,ssh_pass)
-print(mysql_user, mysql_pass, port)
+print(mysql_user, mysql_pass)
 
 tunnel = sshtunnel.SSHTunnelForwarder(
         ('134.74.126.104', 22),
