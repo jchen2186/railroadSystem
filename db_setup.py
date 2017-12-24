@@ -2,11 +2,32 @@ from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
-
 import pymysql
 pymysql.install_as_MySQLdb()
 
-engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
+import sshtunnel
+import os
+
+ssh_user = os.environ.get('ssh_user')
+ssh_pass = os.environ.get('ssh_pass')
+
+print(ssh_user,ssh_pass)
+
+tunnel = sshtunnel.SSHTunnelForwarder(
+        ('134.74.126.104', 22),
+        ssh_username=ssh_user,
+        ssh_password=ssh_pass,
+        remote_bind_address=('134.74.146.21', 3306))
+tunnel.start()
+
+mysql_user = os.environ.get('mysql_user')
+mysql_pass = os.environ.get('mysql_pass')
+port = tunnel.local_bind_port
+print(mysql_user, mysql_pass, port)
+url = "mysql://{}:{}@localhost:{}/F17336Pteam6".format(mysql_user, mysql_pass, port)
+engine = create_engine(url)
+
+#engine = create_engine("mysql://b25d33785aec94:464ade6c@us-cdbr-iron-east-05.cleardb.net/heroku_e5cda53fed73da5")
 
 # engine = create_engine("mysql://root@localhost/F17336Pteam6")
 
@@ -171,7 +192,7 @@ def create_reservation_and_trips(train_id, departure_station, departure_time, ar
     for idx, passenger_type in enumerate(passengers):
         rate_tuple = fare_types[idx+1]
         for i in range(passenger_type):
-            trip = Trips(trip_time_start=departure_time, trip_station_start=station_start_id, trip_station_end=station_end_id, fare_type=rate_tuple[0], fare=base_fare*rate_tuple[1], train_id=train_id, reservation_id=reservation_id)
+            trip = Trips(trip_time_start=day, trip_station_start=station_start_id, trip_station_end=station_end_id, fare_type=rate_tuple[0], fare=base_fare*rate_tuple[1], train_id=train_id, reservation_id=reservation_id)
             session.add(trip)
             session.commit()
 
