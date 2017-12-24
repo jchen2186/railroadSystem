@@ -21,7 +21,7 @@ class Passengers(Base):
 
 class Reservations(Base):
     __table__ = Table('reservations', metadata, autoload=True)
-    parent = relationship("Trips", backref = backref("Reservations", cascade = "all, delete"))
+    # parent = relationship("Trips", backref = backref("Reservations", cascade = "all, delete"))
 
 class Seats_Free(Base):
     __table__ = Table('seats_free', metadata, autoload=True)
@@ -177,7 +177,7 @@ def create_reservation_and_trips(train_id, departure_station, departure_time, ar
             session.commit()
 
 ######## helper function
-def get_station_train_deprture(train_id, station_id):
+def get_station_train_departure(train_id, station_id):
     return session.query(Stops_At).filter(Stops_At.train_id == train_id, Stops_At.station_id == station_id).first().time_out
 
 def get_station_train_arrival(train_id, station_id):
