@@ -115,7 +115,7 @@ def rebook_reservation(email=None, reservations=None, reservation_id=None):
         elif form.validate():
             # query the database for any reservations for this person
 
-            reservations = get_my_trips(email)
+            reservations = get_my_trips(form.email.data)
 
             if not reservations:
                 reservations = []
@@ -149,7 +149,7 @@ def cancel_reservation(email=None, reservations=None, reservation_id=None):
         elif form.validate():
             # query the database for any reservations for this person
 
-            reservations = get_my_trips(email)
+            reservations = get_my_trips(form.email.data)
 
             if not reservations:
                 reservations = []
